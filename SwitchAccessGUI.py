@@ -36,9 +36,14 @@ def get_interface_status(ip, username, password):
         'password': password,
     }
     net_connect = ConnectHandler(**device)
+
+    hostname_output = net_connect.send_command("show running-config | include hostname")
+    match = re.search(r"hostname\s+(\S+)", hostname_output)
+    hostname = match.group(1) if match else ip
+
     output = net_connect.send_command("show interface status")
     net_connect.disconnect()
-    return output
+    return hostname, output
 
 # ---------------- PARSE INTERFACES ----------------
 def parse_status(output):
@@ -92,7 +97,7 @@ def filter_front_ports(interfaces):
     return front_ports
 
 # ---------------- DRAW SWITCH ----------------
-def draw_switch(canvas, interfaces, member_id):
+def draw_switch(canvas, interfaces, member_id, hostname):
     canvas.delete("all")
     tooltip_data = {}
 
@@ -108,7 +113,7 @@ def draw_switch(canvas, interfaces, member_id):
     height_needed = 30 + padding * (rows + 1) + box_height * rows
     canvas.config(width=width_needed, height=height_needed)
 
-    canvas.create_text(10, 10, text=f"Switch {member_id}",
+    canvas.create_text(10, 10, text=f"{hostname} - Switch {member_id}",
                        anchor="w", fill="white", font=("Arial", 12, "bold"))
 
     for idx, (port, name, status, vlan, duplex, speed) in enumerate(interfaces):
@@ -152,7 +157,7 @@ def draw_switch(canvas, interfaces, member_id):
 # ---------------- REFRESH DRAWING ----------------
 def refresh():
     try:
-        output = get_interface_status(ip_entry.get(),
+        hostname, output = get_interface_status(ip_entry.get(),
                                       user_entry.get(),
                                       pass_entry.get())
         interfaces_by_member = parse_status(output)
@@ -169,7 +174,7 @@ def refresh():
             frame.grid(row=r, column=0, columnspan=2, pady=10, padx=10, sticky="EW")
             canvas = tk.Canvas(frame, bg="black", highlightthickness=0)
             canvas.pack()
-            draw_switch(canvas, interfaces_by_member[member_id], member_id)
+            draw_switch(canvas, interfaces_by_member[member_id], member_id, hostname)
             canvases.append(frame)
             r += 1
 
