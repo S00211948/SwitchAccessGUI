@@ -184,21 +184,24 @@ def refresh():
 # ---------------- GUI SETUP ----------------
 root = tk.Tk()
 root.title("Cisco Stacked Switch Port Status")
+root.geometry("350x150")
+root.columnconfigure(0, weight=1)
+root.columnconfigure(1, weight=1)
 
-tk.Label(root, text="IP Address:").grid(row=0, column=0)
+tk.Label(root, text="IP Address:").grid(row=0, column=0,pady=5, sticky="W")
 ip_entry = tk.Entry(root)
-ip_entry.grid(row=0, column=1,sticky="EW")
+ip_entry.grid(row=0, column=1,pady=5,padx=5,sticky="EW")
 
-tk.Label(root, text="Username:").grid(row=1, column=0)
+tk.Label(root, text="Username:").grid(row=1, column=0,pady=5, sticky="W")
 user_entry = tk.Entry(root)
-user_entry.grid(row=1, column=1,sticky="EW")
+user_entry.grid(row=1, column=1,pady=5,padx=5,sticky="EW")
 
-tk.Label(root, text="Password:").grid(row=2, column=0)
+tk.Label(root, text="Password:").grid(row=2, column=0,pady=5, sticky="W")
 pass_entry = tk.Entry(root, show="*")
-pass_entry.grid(row=2, column=1,sticky="EW")
+pass_entry.grid(row=2, column=1,pady=5,padx=5,sticky="EW")
 
 connect_button = tk.Button(root, text="Start Monitor", command=refresh)
-connect_button.grid(row=3, column=0, columnspan=2,sticky="EW")
+connect_button.grid(row=3, column=0, columnspan=2,pady=5,padx=5,sticky="EW")
 
 canvases = []
 
